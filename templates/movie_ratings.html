@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>StreamFlix - {{ movie_title }} Ratings</title>
+    <style>
+        :root {
+            --bg-color: #0f1014;
+            --card-bg: #1a1d29;
+            --text-primary: #ffffff;
+            --text-secondary: #8f98b2;
+            --accent-blue: #007bff;
+            --font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            font-family: var(--font-family);
+            margin: 0;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background-color: #030b17;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--accent-blue);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .user-name {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .logout-btn {
+            background: transparent;
+            border: 1px solid var(--text-secondary);
+            color: var(--text-secondary);
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .logout-btn:hover {
+            border-color: var(--accent-blue);
+            color: var(--accent-blue);
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .page-title {
+            font-size: 36px;
+            margin-bottom: 30px;
+            text-align: center;
+            font-weight: 300;
+        }
+
+        .back-link {
+            display: inline-block;
+            background: var(--accent-blue);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            margin-bottom: 30px;
+            transition: background-color 0.3s ease;
+        }
+
+        .back-link:hover {
+            background-color: #0056b3;
+        }
+
+        /* Ratings Container */
+        .ratings-container {
+            display: grid;
+            gap: 20px;
+        }
+
+        .rating-card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid #2a2d3a;
+            transition: border-color 0.3s ease;
+        }
+
+        .rating-card:hover {
+            border-color: var(--accent-blue);
+        }
+
+        .rating-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .rating-user {
+            font-weight: bold;
+            color: var(--text-primary);
+            font-size: 16px;
+        }
+
+        .rating-stars {
+            color: #ffc107;
+            font-size: 18px;
+        }
+
+        .rating-date {
+            color: var(--text-secondary);
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        .rating-description {
+            color: var(--text-primary);
+            line-height: 1.6;
+            margin-top: 15px;
+        }
+
+        .no-ratings {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 18px;
+            margin-top: 50px;
+        }
+
+        .rating-summary {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            text-align: center;
+            border: 1px solid #2a2d3a;
+        }
+
+        .average-rating {
+            font-size: 48px;
+            font-weight: bold;
+            color: var(--accent-blue);
+            margin-bottom: 10px;
+        }
+
+        .total-ratings {
+            color: var(--text-secondary);
+            font-size: 16px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <div class="logo">🎬 StreamFlix</div>
+        <div class="user-info">
+            <span class="user-name">Welcome, {{ username }}</span>
+            <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <a href="{{ url_for('home') }}" class="back-link">← Back to Home</a>
+        
+        <h1 class="page-title">{{ movie_title }} - User Ratings</h1>
+
+        {% if ratings %}
+            <div class="rating-summary">
+                <div class="average-rating">
+                    {% set total = 0 %}
+                    {% set count = 0 %}
+                    {% for rating in ratings %}
+                        {% set total = total + rating[0] %}
+                        {% set count = count + 1 %}
+                    {% endfor %}
+                    {{ (total / count) | round(1) }} / 5
+                </div>
+                <div class="total-ratings">{{ count }} user rating{% if count != 1 %}s{% endif %}</div>
+            </div>
+
+            <div class="ratings-container">
+                {% for rating in ratings %}
+                <div class="rating-card">
+                    <div class="rating-header">
+                        <div>
+                            <div class="rating-user">{{ rating[2] }}</div>
+                            <div class="rating-date">{{ rating[3] }}</div>
+                        </div>
+                        <div class="rating-stars">
+                            {% for i in range(rating[0]) %}
+                                ★
+                            {% endfor %}
+                            {% for i in range(5 - rating[0]) %}
+                                ☆
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% if rating[1] %}
+                    <div class="rating-description">{{ rating[1] }}</div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="no-ratings">
+                <h3>No ratings yet for "{{ movie_title }}"</h3>
+                <p>Be the first to rate this movie!</p>
+                <a href="{{ url_for('home') }}" class="back-link">Search for this movie to rate it</a>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>
