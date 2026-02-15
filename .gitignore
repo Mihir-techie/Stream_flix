@@ -55,5 +55,3 @@ Thumbs.db
 instance/
 .webassets-cache
 
-# Large model files (too big for GitHub)
-models/*.pkl
